@@ -1,31 +1,115 @@
+import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// TODO: Define an interface for the Coordinates object
+interface Coordinates {
+  lat: number;
+  lon: number;
+}
 
-// TODO: Define a class for the Weather object
+interface CurrentWeather {
+  city: string;
+  date: string;
+  icon: string;
+  iconDescription: string;
+  tempF: number;
+  windSpeed: number;
+  humidity: number;
+}
 
-// TODO: Complete the WeatherService class
+interface ForecastWeather {
+  date: string;
+  icon: string;
+  iconDescription: string;
+  tempF: number;
+  windSpeed: number;
+  humidity: number;
+}
+
 class WeatherService {
-  // TODO: Define the baseURL, API key, and city name properties
-  // TODO: Create fetchLocationData method
-  // private async fetchLocationData(query: string) {}
-  // TODO: Create destructureLocationData method
-  // private destructureLocationData(locationData: Coordinates): Coordinates {}
-  // TODO: Create buildGeocodeQuery method
-  // private buildGeocodeQuery(): string {}
-  // TODO: Create buildWeatherQuery method
-  // private buildWeatherQuery(coordinates: Coordinates): string {}
-  // TODO: Create fetchAndDestructureLocationData method
-  // private async fetchAndDestructureLocationData() {}
-  // TODO: Create fetchWeatherData method
-  // private async fetchWeatherData(coordinates: Coordinates) {}
-  // TODO: Build parseCurrentWeather method
-  // private parseCurrentWeather(response: any) {}
-  // TODO: Complete buildForecastArray method
-  // private buildForecastArray(currentWeather: Weather, weatherData: any[]) {}
-  // TODO: Complete getWeatherForCity method
-  // async getWeatherForCity(city: string) {}
+  private baseURL: string = 'https://api.openweathermap.org';
+  private apiKey: string = process.env.API_KEY || '';
+
+  // Fetch geographical coordinates for a city
+  async fetchCoordinates(city: string): Promise<Coordinates> {
+    try {
+      const response = await axios.get(`${this.baseURL}/geo/1.0/direct`, {
+        params: {
+          q: city,
+          limit: 1,
+          appid: this.apiKey,
+        },
+      });
+
+      if (response.data.length === 0) {
+        throw new Error('City not found');
+      }
+
+      const { lat, lon } = response.data[0];
+      return { lat, lon };
+    } catch (error) {
+      throw new Error(`Failed to fetch coordinates: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  // Fetch current weather data
+  async fetchCurrentWeather(coordinates: Coordinates): Promise<CurrentWeather> {
+    try {
+      const response = await axios.get(`${this.baseURL}/data/2.5/weather`, {
+        params: {
+          lat: coordinates.lat,
+          lon: coordinates.lon,
+          units: 'imperial', // Use Fahrenheit
+          appid: this.apiKey,
+        },
+      });
+
+      const { name: city, dt } = response.data;
+      const { icon, description: iconDescription } = response.data.weather[0];
+      const { temp: tempF, humidity } = response.data.main;
+      const { speed: windSpeed } = response.data.wind;
+
+      return {
+        city,
+        date: new Date(dt * 1000).toLocaleDateString(),
+        icon,
+        iconDescription,
+        tempF,
+        windSpeed,
+        humidity,
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch current weather: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  // Fetch 5-day forecast data
+  async fetchForecast(coordinates: Coordinates): Promise<ForecastWeather[]> {
+    try {
+      const response = await axios.get(`${this.baseURL}/data/2.5/forecast`, {
+        params: {
+          lat: coordinates.lat,
+          lon: coordinates.lon,
+          units: 'imperial', // Use Fahrenheit
+          appid: this.apiKey,
+        },
+      });
+
+      // Extract daily forecast data (one entry per day)
+      const forecastData = response.data.list.filter((_: any, index: number) => index % 8 === 0);
+
+      return forecastData.map((item: any) => ({
+        date: new Date(item.dt * 1000).toLocaleDateString(),
+        icon: item.weather[0].icon,
+        iconDescription: item.weather[0].description,
+        tempF: item.main.temp,
+        windSpeed: item.wind.speed,
+        humidity: item.main.humidity,
+      }));
+    } catch (error) {
+      throw new Error(`Failed to fetch forecast: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
 }
 
 export default new WeatherService();
