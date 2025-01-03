@@ -1,11 +1,8 @@
 {
   "compilerOptions": {
-    "module": "NodeNext", // Changed from ESNext to NodeNext
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "baseUrl": "./src",
-    "paths": {
-      "*": ["*"]
-    },
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
