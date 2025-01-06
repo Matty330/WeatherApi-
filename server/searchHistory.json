@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "id": "c88d64f2-19a8-42e7-a4e3-69578b7005e3",
+    "city": "San Diego"
+  },
+  {
+    "id": "3c0699fe-e5c2-464e-924b-c896d67417e3",
+    "city": "windham"
+  },
+  {
+    "id": "33afbfff-19f3-4f85-b05e-2ef3027631b2",
+    "city": "san diego"
+  },
+  {
+    "id": "45e731a6-e9e2-423b-bf99-061db10a60d0",
+    "city": "san diego"
+  },
+  {
+    "id": "5fe10087-8811-4759-a7ac-c1c1ae97ed4f",
+    "city": "windham"
+  },
+  {
+    "id": "14477785-76b1-42b6-99cc-a401f40dae2b",
+    "city": "san diego"
+  },
+  {
+    "id": "2c35dec7-ba2e-47b8-92e4-ae9948d203f3",
+    "city": "san diego"
+  },
+  {
+    "id": "527a8f5c-d6aa-4b50-be8d-52d4d368873c",
+    "city": "ravenna"
+  },
+  {
+    "id": "f3158eed-46b7-4852-8ffe-b9d40665c17d",
+    "city": "ravenna"
+  }
+]
