@@ -7,6 +7,11 @@ const currentWeatherContainer = document.getElementById('current-weather') as HT
 const forecastContainer = document.getElementById('forecast-container') as HTMLDivElement;
 const historyContainer = document.getElementById('history-container') as HTMLDivElement;
 
+// Dropdown container for search history
+const dropdownHistory = document.createElement('div');
+dropdownHistory.className = 'dropdown-history';
+document.body.appendChild(dropdownHistory);
+
 // Fetch weather data for a city
 const fetchWeather = async (cityName: string) => {
   console.log('Fetching weather for:', cityName);
@@ -33,6 +38,7 @@ const fetchWeather = async (cityName: string) => {
     renderForecast(forecast);
   } catch (error) {
     console.error('Error fetching weather:', error);
+    alert('Failed to fetch weather data. Please try again.');
   }
 };
 
@@ -81,21 +87,25 @@ const renderForecast = (forecast: any[]) => {
   });
 };
 
-// Render search history
-const renderSearchHistory = (history: any[]) => {
-  console.log('Rendering search history:', history);
-  historyContainer.innerHTML = '';
+// Render search history dropdown
+const renderSearchHistoryDropdown = (history: any[]) => {
+  console.log('Rendering search history dropdown:', history);
+  dropdownHistory.innerHTML = '';
   history.forEach((entry) => {
-    const div = document.createElement('div');
-    div.textContent = entry.city;
-    historyContainer.appendChild(div);
+    const historyItem = document.createElement('div');
+    historyItem.textContent = entry.city;
+    historyItem.addEventListener('click', () => {
+      fetchWeather(entry.city);
+      dropdownHistory.classList.remove('show');
+    });
+    dropdownHistory.appendChild(historyItem);
   });
 };
 
 // Get and render search history
 const getAndRenderHistory = async () => {
   const history = await fetchSearchHistory();
-  renderSearchHistory(history);
+  renderSearchHistoryDropdown(history);
 };
 
 // Handle form submission
@@ -109,6 +119,20 @@ searchForm.addEventListener('submit', (event) => {
   fetchWeather(cityName);
   searchInput.value = '';
   getAndRenderHistory();
+});
+
+// Show/hide dropdown history on input focus
+searchInput.addEventListener('focus', async () => {
+  const history = await fetchSearchHistory();
+  renderSearchHistoryDropdown(history);
+  dropdownHistory.style.left = `${searchInput.getBoundingClientRect().left}px`;
+  dropdownHistory.style.top = `${searchInput.getBoundingClientRect().bottom}px`;
+  dropdownHistory.style.width = `${searchInput.offsetWidth}px`;
+  dropdownHistory.classList.add('show');
+});
+
+searchInput.addEventListener('blur', () => {
+  setTimeout(() => dropdownHistory.classList.remove('show'), 200);
 });
 
 // Initial render
