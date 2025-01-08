@@ -5,7 +5,7 @@ const searchForm = document.getElementById('search-form') as HTMLFormElement;
 const searchInput = document.getElementById('search-input') as HTMLInputElement;
 const currentWeatherContainer = document.getElementById('current-weather') as HTMLDivElement;
 const forecastContainer = document.getElementById('forecast-container') as HTMLDivElement;
-const historyContainer = document.getElementById('history-container') as HTMLDivElement;
+
 
 // Dropdown container for search history
 const dropdownHistory = document.createElement('div');
